@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 
 import Database from "./config/Database.js";
 import Routes from "./Routes.js";
-import AuthController from "./controllers/auth/AuthController.js";
 
 class Server{
     constructor() {

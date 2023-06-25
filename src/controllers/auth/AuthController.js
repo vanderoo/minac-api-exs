@@ -18,14 +18,20 @@ class AuthController {
     async register (req, res) {
         try {
             console.log(this.UserModel);
-            const { username, password, conPass } = req.body;
+            const { name, email,username, password, conPass } = req.body;
 
             const checkUsername = await this.UserModel.findOne({
                 where: { username: username },
             });
+            const checkEmail = await this.UserModel.findOne({
+                where: { email: email },
+            });
 
             if (checkUsername) {
                 return res.status(400).json({ message: "Username has used" });
+            }
+            if (checkEmail) {
+                return res.status(400).json({ message: "Email has used" });
             }
             if (password !== conPass) {
                 return res.status(400).json({ message: "Password not identical" });
@@ -34,6 +40,8 @@ class AuthController {
             const hashedPassword = await bcrypt.hash(password, 10);
 
             const user = await this.UserModel.create({
+                name: name,
+                email: email,
                 username: username,
                 password: hashedPassword,
             });
@@ -55,7 +63,7 @@ class AuthController {
                 where: { username: username },
             });
 
-            if (user === null) {
+            if (!user) {
                 return res.status(404).json({ message: "username tidak ditemukan" });
             }
 
@@ -74,7 +82,7 @@ class AuthController {
             res.cookie("authToken", authToken, {
                 httpOnly: true,
             });
-            return res.status(200).json({ message: "Login sukses" });
+            return res.status(200).json({ message: "Login sukses"});
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
