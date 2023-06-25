@@ -1,11 +1,10 @@
-const express = require('express')
-const dotenv = require('dotenv')
-const router = require('./routes')
-const sequelize = require('./config/database')
+import express from "express";
+import dotenv from "dotenv";
+import router from "./routes";
+import sequelize from "../config/database";
 //const User = require('./models/User')
 
 dotenv.config()
-
 sequelize.authenticate()
     .then(() => {
         console.log('Connection has been established successfully.')
@@ -17,6 +16,8 @@ sequelize.authenticate()
 
 const port = process.env.PORT
 const app = express()
+
+app.use(express.json())
 
 app.use(router);
 

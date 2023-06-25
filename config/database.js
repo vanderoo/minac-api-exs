@@ -1,6 +1,6 @@
-const { Sequelize } = require('sequelize');
-const dotenv = require('dotenv')
-dotenv.config()
+import { Sequelize } from 'sequelize';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Database Connection Configuration
 const sequelize = new Sequelize({
@@ -12,4 +12,4 @@ const sequelize = new Sequelize({
     dialect: 'mysql',
 });
 
-module.exports = sequelize;
+export default sequelize;
