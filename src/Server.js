@@ -1,6 +1,8 @@
 //Libs
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+import cookieParser from "cookie-parser"
 
 import Database from "./config/Database.js";
 import Routes from "./Routes.js";
@@ -33,8 +35,14 @@ class Server{
         //init server
         this.APP = express();
 
-        //json parser
-        this.APP.use(express.json());
+        //Middlewares
+        this.APP.use(
+            cors({
+                origin: true,
+            })
+        ); // - CORS
+        this.APP.use(cookieParser()) // - Cookie Parser
+        this.APP.use(express.json());   // - JSON Parser
 
         //init and use routes
         new Routes(this);

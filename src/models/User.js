@@ -29,7 +29,10 @@ class User {
             },
             avatar: {
                 type: DataTypes.TEXT,
-            }
+            },
+            refreshToken: {
+                type: DataTypes.TEXT,
+            },
         });
         //server.model.db.sync();
     }
