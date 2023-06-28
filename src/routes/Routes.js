@@ -1,4 +1,4 @@
-import AuthenticateUser from "../middleware/AuthenticateUser.js";
+import AuthenticateUser from "../middlewares/AuthenticateUser.js";
 
 class Routes {
     constructor(server) {
