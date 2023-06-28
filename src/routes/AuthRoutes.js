@@ -13,37 +13,27 @@ class AuthRoutes extends Routes{
     routes(){
         this.router.post(
             this.authPrefix + '/register',
-            this.AuthController
-                .register
-                .bind(this.AuthController)
+            this.AuthController.register.bind(this.AuthController)
         );
 
         this.router.post(
             this.authPrefix + '/login',
-            this.AuthController
-                .login
-                .bind(this.AuthController)
+            this.AuthController.login.bind(this.AuthController)
         );
 
         this.router.post(
             this.authPrefix + '/logout',
-            this.AuthController
-                .logout
-                .bind(this.AuthController)
+            this.AuthController.logout.bind(this.AuthController)
         );
 
         this.router.post(
             this.authPrefix + '/refresh-token',
-            this.AuthController
-                .refreshToken
-                .bind(this.AuthController)
+            this.AuthController.refreshToken.bind(this.AuthController)
         );
 
         this.router.get(
             this.authPrefix + '/protected',
-            this.authenticateUser
-                .verifyToken
-                .bind(this.authenticateUser),
+            this.authenticateUser.verifyToken.bind(this.authenticateUser),
             (req,res) => {
                 return res.status(200).json(`This is Protected Routes ${req.auth.user_name}`);
             }
@@ -51,16 +41,4 @@ class AuthRoutes extends Routes{
     }
 }
 
-export default AuthRoutes
-
-/*
-const authRoutes = express.Router();
-
-authRoutes.post('/login', login);
-authRoutes.post('/register', register);
-
-const routes = [authRoutes];
-
-export default routes;
- */
-
+export default AuthRoutes;
