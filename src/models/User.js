@@ -1,8 +1,6 @@
 //Libs
 import {DataTypes} from 'sequelize';
 
-import Token from "./Token.js";
-
 class User {
     constructor(server) {
         this.table = server.model.db.define('User', {
@@ -35,13 +33,6 @@ class User {
             },
         });
 
-        this.token = new Token(server);
-        this.tokenModel = this.token.table;
-
-        this.table.hasMany(this.tokenModel);
-        this.tokenModel.belongsTo(this.table);
-
-        //server.model.db.sync();
     }
 }
 

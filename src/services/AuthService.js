@@ -3,13 +3,15 @@ import jwt from 'jsonwebtoken';
 import bcrypt from "bcrypt";
 
 import TokenService from "./TokenService.js";
-import User from "../models/User.js";
 import CustomError from "../Helpers/Errors/CustomError.js";
+import Token from "../models/Token.js";
+import User from "../models/User.js";
 
 class AuthService {
     constructor(server) {
         this.server = server;
         this.UserModel = new User(this.server).table;
+        this.TokenModel = new Token(this.server).table;
         this.TokenService = new TokenService(this.server);
     }
 
@@ -86,24 +88,22 @@ class AuthService {
         const { encryptedRefreshToken, iv } = this.TokenService.encryptRefreshToken(refreshToken);
         const refreshTokenEnc = `${encryptedRefreshToken}.${iv}`;
 
-        await this.UserModel.update(
-            { refreshToken: refreshTokenEnc },
-            {
-                where: {
-                    id: user_id,
-                },
-            }
-        );
+        console.log('USER ID: ' + user_id);
+        await this.TokenModel.create({
+            refreshToken: refreshTokenEnc,
+            UserId: user_id
+        });
+
 
         return refreshTokenEnc;
     }
 
     async verifyRefreshToken(refreshToken) {
-        const user = await this.UserModel.findOne({
+        const tokenUser = await this.TokenModel.findOne({
             where: {refreshToken: refreshToken},
         });
 
-        if (!user) {
+        if (!tokenUser) {
             throw new CustomError('Invalid Refresh Token', 403);
         }
 
@@ -128,22 +128,13 @@ class AuthService {
     }
 
     async logout(refreshToken){
-        const user = await this.UserModel.findOne(
-            {
-                where: {refreshToken: refreshToken}
-            }
-        );
+        const tokenUser = await this.TokenModel.findOne({
+            where: {refreshToken: refreshToken}
+        });
 
-        if (!user) throw new CustomError('Invalid Refresh Token', 403);
+        if (!tokenUser) throw new CustomError('Invalid Refresh Token', 403);
 
-        await this.UserModel.update(
-            {
-                refreshToken: null
-            }, {
-                where: {
-                    id: user.id,
-                },
-            });
+        tokenUser.destroy({force: true});
     }
 
 }
