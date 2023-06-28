@@ -3,9 +3,7 @@ import crypto from "crypto";
 class TokenService {
     constructor(server) {
         this.server = server;
-        this.encryptionKey = crypto.createHash('sha256')
-            .update(this.server.env.APP_KEY, 'utf8')
-            .digest();
+        this.encryptionKey = crypto.createHash('sha256').update(this.server.env.APP_KEY, 'utf8').digest();
     }
 
     encryptRefreshToken(refreshToken){

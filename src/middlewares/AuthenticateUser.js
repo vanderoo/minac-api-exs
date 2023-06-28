@@ -15,9 +15,11 @@ class AuthenticateUser {
         }
 
         jwt.verify(token, this.server.env.JWT_SECRET, (err, data) => {
+
             if (err && err.name === 'TokenExpiredError') {
                 return res.status(401).json({ message: 'Token Expired' });
             }
+
             if (err) {
                 return res.status(401).json({ message: 'Token Unauthorized' });
             }

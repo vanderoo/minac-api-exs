@@ -45,7 +45,7 @@ class AuthRoutes extends Routes{
                 .verifyToken
                 .bind(this.authenticateUser),
             (req,res) => {
-                return res.status(200).json(`This is Protected Routes ${req.auth.user_username}`);
+                return res.status(200).json(`This is Protected Routes ${req.auth.user_name}`);
             }
         );
     }
