@@ -62,11 +62,11 @@ class AuthService {
 
         const accessToken = this.generateAccessToken(user.id, user.name)
 
-        const encryptedRefreshToken = await this.generateRefreshToken(user.id, user.name);
+        const refreshToken = await this.generateRefreshToken(user.id, user.name);
 
         return {
             accessToken,
-            encryptedRefreshToken
+            refreshToken
         }
     }
 
@@ -94,30 +94,42 @@ class AuthService {
             UserId: user_id
         });
 
-
-        return refreshTokenEnc;
+        return refreshToken;
     }
 
-    async verifyRefreshToken(refreshToken) {
-        const tokenUser = await this.TokenModel.findOne({
-            where: {refreshToken: refreshToken},
-        });
-
+    async getTokenUser(userId) {
+        const tokenUser = await this.TokenModel.findAll({ where: { UserId: userId } });
         if (!tokenUser) {
             throw new CustomError('Invalid Refresh Token', 403);
         }
+        return tokenUser;
+    }
 
-        const encryptedRefreshToken = refreshToken && refreshToken.split('.')[0];
-        const iv = refreshToken && refreshToken.split('.')[1];
+    validateTokenUser(tokenUser, refreshToken) {
+        const tokenValid = tokenUser.find((token) => {
+            const modelToken = token.dataValues.refreshToken;
+            const encryptedRefreshToken = modelToken.split('.')[0];
+            const iv = modelToken.split('.')[1];
+            const rawRefreshToken = this.TokenService.decryptRefreshToken(
+                encryptedRefreshToken,
+                iv
+            );
 
-        const rawRefreshToken = this.TokenService.decryptRefreshToken(encryptedRefreshToken, iv);
+            return rawRefreshToken === refreshToken ? token : undefined;
+        });
 
+        if (!tokenValid) {
+            throw new CustomError('Invalid Refresh Token', 403);
+        }
+
+        return tokenValid;
+
+    }
+
+    async verifyRefreshToken(refreshToken) {
+        let decodedToken;
         try {
-            const decodedToken = jwt.verify(rawRefreshToken, this.server.env.REFRESH_TOKEN_SECRET);
-            return {
-                user_id: decodedToken.user_id,
-                user_name: decodedToken.user_name,
-            };
+            decodedToken = jwt.verify(refreshToken, this.server.env.REFRESH_TOKEN_SECRET);
         } catch (err) {
             if (err.name === 'TokenExpiredError') {
                 throw new CustomError('Refresh Token Expired', 403);
@@ -125,14 +137,31 @@ class AuthService {
                 throw new CustomError('Refresh Token Unauthorized', 403);
             }
         }
+
+        const tokenUser = await this.getTokenUser(decodedToken.user_id);
+        this.validateTokenUser(tokenUser, refreshToken);
+
+        return {
+            user_id: decodedToken.user_id,
+            user_name: decodedToken.user_name,
+        }
+
     }
 
     async logout(refreshToken){
-        const tokenUser = await this.TokenModel.findOne({
-            where: {refreshToken: refreshToken}
-        });
+        let decodedToken;
+        try {
+            decodedToken = jwt.verify(refreshToken, this.server.env.REFRESH_TOKEN_SECRET);
+        } catch (err) {
+            if (err.name === 'TokenExpiredError') {
+                throw new CustomError('Refresh Token Expired', 403);
+            } else {
+                throw new CustomError('Refresh Token Unauthorized', 403);
+            }
+        }
 
-        if (!tokenUser) throw new CustomError('Invalid Refresh Token', 403);
+        const tokenUserArr = await this.getTokenUser(decodedToken.user_id);
+        const tokenUser = await this.validateTokenUser(tokenUserArr,refreshToken);
 
         tokenUser.destroy({force: true});
     }

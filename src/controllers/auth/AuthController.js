@@ -1,4 +1,3 @@
-import User from '../../models/User.js';
 import AuthService from "../../services/AuthService.js";
 import ErrorHandler from "../../Helpers/Errors/ErrorHandler.js";
 
@@ -6,7 +5,6 @@ class AuthController {
 
     constructor(server) {
         this.server = server;
-        this.UserModel = new User(this.server).table;
         this.AuthService = new AuthService(this.server);
     }
 
@@ -26,11 +24,9 @@ class AuthController {
         try {
             const { username, password } = req.body;
 
-            const {accessToken, encryptedRefreshToken} = await this.AuthService.login(username,password);
-            console.log(accessToken)
+            const {accessToken, refreshToken} = await this.AuthService.login(username,password);
 
-
-            res.cookie("refreshToken", encryptedRefreshToken, {
+            res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 maxAge: 3 * 24 * 60 * 60 * 1000,
             });
