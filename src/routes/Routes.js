@@ -4,7 +4,7 @@ class Routes {
     constructor(server) {
         this.server = server;
         this.router = this.server.router;
-        this.prefix = '/v1';
+        this.prefix = `/${this.server.env.API_Version}`;
         this.authenticateUser = new AuthenticateUser(this.server);
     }
 }

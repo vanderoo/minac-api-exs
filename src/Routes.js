@@ -1,19 +1,11 @@
 import AuthRoutes from "./routes/AuthRoutes.js";
+import PaymentRoutes from "./routes/PaymentRoutes.js";
 
 class Routes {
     constructor(server) {
         new AuthRoutes(server);
+        new PaymentRoutes(server);
     }
 }
 
 export default Routes
-
-/*
-const routes = express.Router();
-
-authRoutes.forEach((route) => {
-    routes.use('/auth', route);
-});
-
-export default routes;
- */

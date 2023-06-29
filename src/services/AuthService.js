@@ -74,7 +74,7 @@ class AuthService {
         return jwt.sign(
             {user_id, user_name},
             this.server.env.JWT_SECRET,
-            {expiresIn: '30s'}
+            {expiresIn: '10m'}
         );
     }
 
