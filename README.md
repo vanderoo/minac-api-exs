@@ -1,2 +1,1 @@
-# minac-api-exs
-# Tese
+# minac-api-express
