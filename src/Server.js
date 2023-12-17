@@ -40,7 +40,7 @@ class Server{
             cors({
                 origin: true,
             })
-        ); // - CORS
+        ); // - CORS 
         this.APP.use(cookieParser()) // - Cookie Parser
         this.APP.use(express.json());   // - JSON Parser
 

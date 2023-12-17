@@ -17,6 +17,14 @@ class PaymentRoutes extends Routes{
             this.authenticateUser.verifyToken.bind(this.authenticateUser),
             this.MidtransController.bankTransfer.bind(this.MidtransController)
         );
+        this.router.post(
+            this.paymentPrefix + '/charge/gopay',
+            this.MidtransController.gopay.bind(this.MidtransController)
+        );
+        this.router.get('/', (req,res) => {
+            res.status(200).json({status: "Connected"})
+        }
+        );
     }
 }
 

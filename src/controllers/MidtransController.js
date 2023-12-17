@@ -2,6 +2,7 @@ import BankTransfer from "../services/BankTransfer.js";
 import MidtransService from "../services/MidtransService.js";
 import User from "../models/User.js";
 import ErrorHandler from "../Helpers/Errors/ErrorHandler.js";
+import Ewallet from "../services/EWallet.js";
 
 
 class MidtransController {
@@ -46,6 +47,29 @@ class MidtransController {
             ErrorHandler.handle(err,req,res);
         }
 
+    }
+
+    async gopay(req,res){
+        try {
+            let data;
+            let {payment_type, items} = req.body;
+            let customer = {
+                email:"vadero@gmail.com",
+                first_name:"dero",
+                last_name:"",
+                phone:"0852840653",
+            }
+        
+            let eWallet = new Ewallet(items, customer)
+            data = eWallet.goPay()
+
+            const result = await this.MidtransService.charge(data);
+
+            return res.status(200).json(result)
+    
+        } catch (err) {
+            ErrorHandler.handle(err,req,res);
+        }
     }
 
 }
